@@ -9,18 +9,45 @@ import {
     Text,
     VStack,
     Button,
+    Alert,
+    AlertIcon,
+    AlertTitle,
+    AlertDescription,
+    useTheme,
 } from '@chakra-ui/react';
+import { addDoc, collection } from 'firebase/firestore';
+import { auth, db } from '../../utils/Firebase';
 
 const FadeSelect = () => {
     const [sliderValue, setSliderValue] = useState(0);
+    const [showAlert, setShowAlert] = useState(false);
+    const theme = useTheme();
 
     const handleChange = (value: React.SetStateAction<number>) => {
         setSliderValue(value);
     };
 
-    const handleSave = () => {
-        console.log(`Salvando o valor: ${sliderValue}`);
-        // Aqui você pode adicionar a lógica para persistir o valor, como uma chamada de API.
+    const handleSave = async () => {
+        try {
+            const user = auth.currentUser;
+            if (user) {
+                const userId = user.uid;
+                const moodState = stageLabels[sliderValue];
+                const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                const docRef = await addDoc(collection(db, 'moodData'), {
+                    userId: userId,
+                    moodState: moodState,
+                    time: timestamp,
+                });
+                console.log('Mood data saved with ID: ', docRef.id);
+                setShowAlert(true);
+            } else {
+                console.log('User not authenticated');
+            }
+        } catch (error) {
+            console.error('Error saving mood data: ', error);
+        }
     };
 
     const stageLabels = [
@@ -37,30 +64,40 @@ const FadeSelect = () => {
             <Flex>
                 <VStack spacing={8} mr={4} align="stretch">
                     {stageLabels.map((label, index) => (
-                        <Text key={index} color={sliderValue === (stageLabels.length - 1 - index) ? "blue.500" : "gray.500"}>
+                        <Text key={index} color={sliderValue === (stageLabels.length - 1 - index) ? theme.colors.brand.coral : "gray.800"}>
                             {label}
                         </Text>
                     ))}
                 </VStack>
                 <Slider defaultValue={0} min={0} max={4} step={1} onChange={handleChange} orientation='vertical'>
-                    <SliderTrack bg='red.100'>
-                        <SliderFilledTrack bg='tomato' />
+                    <SliderTrack bg={theme.colors.brand.softYellow}>
+                        <SliderFilledTrack bg={theme.colors.brand.mintGreen} />
                     </SliderTrack>
                     <SliderThumb boxSize={6} sx={{
-                        bg: 'blue.500', // Cor de fundo
-                        border: '2px solid white', // Borda branca para destacar
-                        boxShadow: '0px 0px 0px 4px rgba(66, 153, 225, 0.6)', // Sombra de foco/hover sempre visível
+                        bg: theme.colors.brand.lightBlue,
+                        border: '2px solid white',
+                        boxShadow: `0px 0px 0px 4px ${theme.colors.brand.lightBlue}`,
                         _hover: {
-                            bg: 'blue.500', // Mantém a cor de fundo no hover
-                            boxShadow: '0px 0px 0px 4px rgba(66, 153, 225, 0.6)', // Mantém a sombra de foco/hover no hover
+                            bg: theme.colors.brand.lightBlue,
+                            boxShadow: `0px 0px 0px 4px ${theme.colors.brand.lightBlue}`,
                         },
-                        _focus: { // Estilos para quando o thumb está focado (clicado)
-                            boxShadow: '0px 0px 0px 4px rgba(66, 153, 225, 0.6)', // Mantém a sombra de foco/hover
+                        _focus: {
+                            boxShadow: `0px 0px 0px 4px ${theme.colors.brand.lightBlue}`,
                         }
                     }} />
                 </Slider>
             </Flex>
             <Button colorScheme="blue" mt="4" onClick={handleSave}>Salvar</Button>
+
+            {showAlert && (
+                <Alert status="success" mt="4" borderRadius="md">
+                    <AlertIcon />
+                    <Box>
+                        <AlertTitle>Sucesso!</AlertTitle>
+                        <AlertDescription>Os dados de humor foram salvos com sucesso.</AlertDescription>
+                    </Box>
+                </Alert>
+            )}
         </Flex>
     );
 };
