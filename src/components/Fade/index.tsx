@@ -33,7 +33,7 @@ const FadeSelect = () => {
             if (user) {
                 const userId = user.uid;
                 const moodState = stageLabels[sliderValue];
-                const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const timestamp = new Date().toISOString();
 
                 const docRef = await addDoc(collection(db, 'moodData'), {
                     userId: userId,
@@ -42,6 +42,9 @@ const FadeSelect = () => {
                 });
                 console.log('Mood data saved with ID: ', docRef.id);
                 setShowAlert(true);
+                setTimeout(() => {
+                    setShowAlert(false);
+                }, 3000);
             } else {
                 console.log('User not authenticated');
             }
