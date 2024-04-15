@@ -18,11 +18,29 @@ const MoodChart = ({ data }) => {
         const chart = chartRef.current;
         const canvas = await html2canvas(chart);
         const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('l', 'mm', 'a4'); // Configuração para orientação horizontal (paisagem)
+        const pdf = new jsPDF('l', 'mm', 'a4');
+
+        // Set margins
+        const marginLeft = 20;
+        const marginTop = 20;
+        const marginRight = 20;
+        const marginBottom = 20;
+
+        // Calculate available width and height for the chart
+        const availableWidth = pdf.internal.pageSize.getWidth() - marginLeft - marginRight;
+        const availableHeight = pdf.internal.pageSize.getHeight() - marginTop - marginBottom;
+
+        // Add title
+        const title = 'Mood Chart';
+        pdf.setFontSize(18);
+        pdf.text(title, marginLeft, marginTop);
+
+        // Add chart image
         const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        const chartWidth = availableWidth;
+        const chartHeight = (imgProps.height * chartWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', marginLeft, marginTop + 10, chartWidth, chartHeight);
+
         pdf.save('mood_chart.pdf');
     };
 
