@@ -3,6 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Button, Box } from '@chakra-ui/react'; // Import Box from Chakra UI
+import dayjs from 'dayjs';
 
 const MoodChart = ({ data }) => {
     const moodStates = [
@@ -33,7 +34,7 @@ const MoodChart = ({ data }) => {
         const availableHeight = pdf.internal.pageSize.getHeight() - marginTop - marginBottom;
 
         // Add title
-        const title = 'Mood Chart';
+        const title = 'Afetivograma';
         pdf.setFontSize(18);
         pdf.text(title, marginLeft, marginTop);
 
@@ -41,7 +42,7 @@ const MoodChart = ({ data }) => {
         const imgProps = pdf.getImageProperties(imgData);
         const chartWidth = availableWidth;
         // Aumenta a altura do gráfico. Ajuste este valor conforme necessário.
-        const chartHeightIncreaseFactor = 2; // Fator de aumento da altura do gráfico
+        const chartHeightIncreaseFactor = 1.5; // Fator de aumento da altura do gráfico
         const chartHeight = ((imgProps.height * chartWidth) / imgProps.width) * chartHeightIncreaseFactor;
 
         // Certifique-se de que a altura do gráfico não exceda o espaço disponível na página
@@ -49,14 +50,17 @@ const MoodChart = ({ data }) => {
 
         pdf.addImage(imgData, 'PNG', marginLeft, marginTop + 10, chartWidth, finalChartHeight);
 
-        pdf.save('mood_chart.pdf');
+        const dateTimeNow = dayjs().format('YYYYMMDD_HHmmss'); // Exemplo: 20231004_153045
+        const fileName = `afetivograma_${dateTimeNow}.pdf`;
+
+        pdf.save(fileName);
     };
 
 
     return (
         <Box m={10}> {/* Aplica margem ao redor do componente */}
             <Button onClick={handleExportPDF} mb={4}>
-                Export as PDF
+                Exportar PDF
             </Button>
             <div ref={chartRef}>
                 <ResponsiveContainer width="100%" height={400}>
