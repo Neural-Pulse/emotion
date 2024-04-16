@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import MoodChart from '../../components/LineChart';
 import { Box, Center, Text } from '@chakra-ui/react';
 import { auth, db } from '../../utils/Firebase';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import dayjs from 'dayjs';
 
+interface MoodData {
+    time: string;
+    moodState: string;
+}
+
 const Analytics = () => {
-    const [moodData, setMoodData] = useState([]);
+    const [moodData, setMoodData] = useState<MoodData[]>([]);
 
     useEffect(() => {
         const user = auth.currentUser;
@@ -28,6 +33,7 @@ const Analytics = () => {
                     return {
                         ...data,
                         time: formattedTimestamp,
+                        moodState: data.moodState
                     };
                 });
 
