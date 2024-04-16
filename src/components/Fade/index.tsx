@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { SetStateAction, useState } from 'react';
 import {
     Box,
     Slider,
@@ -23,7 +23,7 @@ const FadeSelect = () => {
     const [showAlert, setShowAlert] = useState(false);
     const theme = useTheme();
 
-    const handleChange = (value) => {
+    const handleChange = (value: SetStateAction<number>) => {
         setSliderValue(value);
     };
 

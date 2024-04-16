@@ -1,4 +1,3 @@
-import React from 'react';
 import { Center, Button, VStack, Image } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 

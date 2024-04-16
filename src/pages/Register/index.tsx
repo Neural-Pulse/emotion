@@ -11,11 +11,11 @@ import {
     Input,
     Stack,
     Text,
-    theme,
     useColorModeValue,
     useToast,
     useTheme
 } from '@chakra-ui/react';
+import { FirebaseError } from 'firebase/app';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
@@ -37,13 +37,17 @@ const RegisterPage = () => {
                 isClosable: true,
             });
         } catch (error) {
-            toast({
-                title: 'Registration Failed',
-                description: error.message,
-                status: 'error',
-                duration: 3000,
-                isClosable: true,
-            });
+            if (error instanceof FirebaseError) {
+                toast({
+                    title: 'Registration Failed',
+                    description: error.message,
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            } else {
+                console.error('An unknown error occurred:', error);
+            }
         }
     };
 

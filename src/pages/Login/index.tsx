@@ -36,13 +36,17 @@ const LoginPage = () => {
             });
             navigate('/');
         } catch (error) {
-            toast({
-                title: 'Login Failed',
-                description: error.message,
-                status: 'error',
-                duration: 3000,
-                isClosable: true,
-            });
+            if (error instanceof Error) {
+                toast({
+                    title: 'Login Failed',
+                    description: error.message,
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            } else {
+                console.error('An unknown error occurred:', error);
+            }
         }
     };
 

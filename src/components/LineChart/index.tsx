@@ -1,11 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { Button, Box, Text } from '@chakra-ui/react';
+import { Button, Box } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 
-const MoodChart = ({ data }) => {
+interface MoodChartProps {
+    data: {
+        time: string;
+        moodState: string;
+    }[];
+}
+
+const MoodChart = ({ data }: MoodChartProps) => {
     const chartRef = useRef(null);
     const [chartProps, setChartProps] = useState({ yAxisWidth: 120, xAxisHeight: 30 });
 
@@ -26,41 +33,43 @@ const MoodChart = ({ data }) => {
 
     const handleExportPDF = async () => {
         // Captura o gráfico com html2canvas
-        const canvas = await html2canvas(chartRef.current, {
-            useCORS: true,
-            scale: 2, // Aumenta a escala para melhorar a qualidade da imagem
-        });
+        if (chartRef.current) {
+            const canvas = await html2canvas(chartRef.current, {
+                useCORS: true,
+                scale: 2, // Aumenta a escala para melhorar a qualidade da imagem
+            });
 
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = canvas.width;
-        const imgHeight = canvas.height;
+            const imgData = canvas.toDataURL('image/png');
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
 
-        // Calcula o tamanho e as margens do PDF baseado no tamanho do gráfico capturado
-        const pdfMargin = 10; // Margem para o PDF em pontos
-        const pdfWidth = imgWidth + pdfMargin * 2; // Largura do PDF incluindo margens
-        const pdfHeight = imgHeight + pdfMargin * 2; // Altura do PDF incluindo margens
+            // Calcula o tamanho e as margens do PDF baseado no tamanho do gráfico capturado
+            const pdfMargin = 10; // Margem para o PDF em pontos
+            const pdfWidth = imgWidth + pdfMargin * 2; // Largura do PDF incluindo margens
+            const pdfHeight = imgHeight + pdfMargin * 2; // Altura do PDF incluindo margens
 
-        // Cria um novo documento PDF com o tamanho calculado
-        const pdf = new jsPDF({
-            orientation: 'l',
-            unit: 'pt',
-            format: [pdfWidth, pdfHeight],
-        });
+            // Cria um novo documento PDF com o tamanho calculado
+            const pdf = new jsPDF({
+                orientation: 'l',
+                unit: 'pt',
+                format: [pdfWidth, pdfHeight],
+            });
 
-        const title = "Afetivograma";
-        const titleSize = 20; // Tamanho da fonte para o título
-        pdf.setFontSize(titleSize);
-        pdf.text(title, 20, 30); // Posiciona o título no PDF
-        // Adiciona a imagem do gráfico ao PDF com as margens definidas
-        pdf.addImage(imgData, 'PNG', pdfMargin, pdfMargin, imgWidth, imgHeight);
+            const title = "Afetivograma";
+            const titleSize = 20; // Tamanho da fonte para o título
+            pdf.setFontSize(titleSize);
+            pdf.text(title, 20, 30); // Posiciona o título no PDF
+            // Adiciona a imagem do gráfico ao PDF com as margens definidas
+            pdf.addImage(imgData, 'PNG', pdfMargin, pdfMargin, imgWidth, imgHeight);
 
-        // Gera o nome do arquivo com a data e hora atual
-        const dateTimeNow = dayjs().format('YYYYMMDD_HHmmss');
-        const fileName = `afetivograma_${dateTimeNow}.pdf`;
+            // Gera o nome do arquivo com a data e hora atual
+            const dateTimeNow = dayjs().format('YYYYMMDD_HHmmss');
+            const fileName = `afetivograma_${dateTimeNow}.pdf`;
 
-        // Salva o PDF
-        pdf.save(fileName);
-    };
+            // Salva o PDF
+            pdf.save(fileName);
+        };
+    }
 
 
 
