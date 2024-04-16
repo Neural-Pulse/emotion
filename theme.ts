@@ -4,7 +4,7 @@ const customTheme = extendTheme({
     colors: {
         brand: {
             lightBlue: '#89CFF0',
-            mintGreen: '#98FF98',
+            mintGreen: '#16A085',
             lavender: '#E6E6FA',
             softYellow: '#FFFACD',
             coral: '#FF7F50',
