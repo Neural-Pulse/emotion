@@ -15,8 +15,9 @@ import {
     AlertDescription,
     useTheme,
 } from '@chakra-ui/react';
-import { addDoc, collection } from 'firebase/firestore';
+import { doc, setDoc, collection } from 'firebase/firestore';
 import { auth, db } from '../../utils/Firebase';
+import { encryptData } from '../../utils/crypto';
 
 const FadeSelect = () => {
     const [sliderValue, setSliderValue] = useState(0);
@@ -26,7 +27,7 @@ const FadeSelect = () => {
     const theme = useTheme();
 
     useEffect(() => {
-        let interval: string | number | NodeJS.Timeout | undefined;
+        let interval: NodeJS.Timeout | undefined;
         if (isButtonDisabled) {
             interval = setInterval(() => {
                 setTimeRemaining((prevTime) => {
@@ -39,7 +40,7 @@ const FadeSelect = () => {
                 });
             }, 1000);
         }
-        return () => clearInterval(interval);
+        return () => interval && clearInterval(interval);
     }, [isButtonDisabled]);
 
     const handleChange = (value: React.SetStateAction<number>) => {
@@ -59,12 +60,18 @@ const FadeSelect = () => {
                 const moodState = stageLabels[stageLabels.length - 1 - sliderValue];
                 const timestamp = new Date().toISOString();
 
-                await addDoc(collection(db, 'moodData'), {
-                    userId: userId,
+                const encryptedMoodData = encryptData({
                     moodState: moodState,
                     time: timestamp,
                 });
-                console.log('Mood data saved with ID: ');
+
+                // Cria um caminho no Firestore isolado por usuário
+                const userMoodDataPath = doc(collection(db, `moodData/${userId}/moodData`));
+
+                await setDoc(userMoodDataPath, {
+                    data: encryptedMoodData
+                });
+                console.log('Mood data saved with ID: ', userMoodDataPath.id);
                 setShowAlert(true);
                 setTimeout(() => setShowAlert(false), 3000);
             } else {
@@ -72,16 +79,16 @@ const FadeSelect = () => {
             }
         } catch (error) {
             console.error('Error saving mood data: ', error);
-            setIsButtonDisabled(false); // Em caso de erro, reabilita o botão imediatamente
+            setIsButtonDisabled(false); // Reabilita o botão em caso de erro
         }
     };
 
     const stageLabels = [
-        "Tristeza profunda/Lentidão/Apatia",
-        "Tristeza/Fadiga/Cansaço/Desânimo",
-        "Bom humor/Estabilidade",
+        "Euforia/Agitação/Aceleração/Agressividade",
         "Irritabilidade/Inquietação/Impaciência",
-        "Euforia/Agitação/Aceleração/Agressividade"
+        "Bom humor/Estabilidade",
+        "Tristeza/Fadiga/Cansaço/Desânimo",
+        "Tristeza profunda/Lentidão/Apatia",
     ];
 
     return (

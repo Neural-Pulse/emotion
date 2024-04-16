@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import MoodChart from '../../components/LineChart';
 import { Box, Center, Text } from '@chakra-ui/react';
 import { auth, db } from '../../utils/Firebase';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, query, onSnapshot } from 'firebase/firestore';
 import dayjs from 'dayjs';
+import { decryptData } from '../../utils/crypto';
 
 interface MoodData {
     time: string;
@@ -17,25 +18,28 @@ const Analytics = () => {
         const user = auth.currentUser;
         if (user) {
             const userId = user.uid;
-            const moodDataQuery = query(collection(db, 'moodData'), where('userId', '==', userId));
+            // Ajusta a consulta para a nova estrutura de dados
+            const moodDataQuery = query(collection(db, `moodData/${userId}/moodData`));
 
             const unsubscribe = onSnapshot(moodDataQuery, (querySnapshot) => {
-                const moodData = querySnapshot.docs.map((doc) => doc.data());
-                console.log('Mood data retrieved: ', moodData);
-
-                const sortedMoodData = moodData.sort((a, b) => {
-                    return dayjs(a.time).valueOf() - dayjs(b.time).valueOf();
-                });
-
-                const formattedMoodData = sortedMoodData.map((data) => {
-                    const timestamp = data.time;
-                    const formattedTimestamp = dayjs(timestamp).format('DD/MM HH:mm');
+                const decryptedMoodData = querySnapshot.docs.map((doc) => {
+                    const encryptedData = doc.data().data; // Acessa o campo 'data' que contém os dados criptografados
+                    // Descriptografa os dados
+                    const decryptedData = decryptData(encryptedData) as MoodData;
                     return {
-                        ...data,
-                        time: formattedTimestamp,
-                        moodState: data.moodState
+                        time: decryptedData.time, // Usa o campo de tempo descriptografado
+                        moodState: decryptedData.moodState, // Usa o estado de humor descriptografado
                     };
                 });
+
+                console.log('Mood data retrieved and decrypted: ', decryptedMoodData);
+
+                const sortedMoodData = decryptedMoodData.sort((a, b) => dayjs(a.time).valueOf() - dayjs(b.time).valueOf());
+
+                const formattedMoodData = sortedMoodData.map((data) => ({
+                    ...data,
+                    time: dayjs(data.time).format('DD/MM HH:mm'), // Formata a data
+                }));
 
                 setMoodData(formattedMoodData);
             });
@@ -51,7 +55,7 @@ const Analytics = () => {
     return (
         <Box>
             <Center>
-                <Text fontSize="2xl" fontWeight="bold" my={5}>Analises de humor</Text>
+                <Text fontSize="2xl" fontWeight="bold" my={5}>Análises de Humor</Text>
             </Center>
             <MoodChart data={moodData} />
         </Box>

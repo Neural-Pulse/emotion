@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.11.5",
     "chart.js": "^4.4.2",
     "chartjs-adapter-date-fns": "^3.0.0",
+    "crypto-js": "^4.2.0",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.10",
     "firebase": "^10.11.0",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@types/chart.js": "^2.9.41",
+    "@types/crypto-js": "^4.2.2",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
