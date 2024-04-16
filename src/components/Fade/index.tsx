@@ -63,11 +63,11 @@ const FadeSelect = () => {
 
     return (
         <Flex direction="column" align="center" justify="center" height="100vh">
-            <Text mb="20px">Selecione o Estágio:</Text>
+            <Text mb="40px" fontSize={30}>Selecione o Estágio:</Text>
             <Flex>
                 <VStack spacing={8} mr={4} align="stretch">
                     {stageLabels.map((label, index) => (
-                        <Text key={index} color={sliderValue === (stageLabels.length - 1 - index) ? theme.colors.brand.coral : "gray.800"}>
+                        <Text key={index} fontSize={12} color={sliderValue === (stageLabels.length - 1 - index) ? theme.colors.brand.coral : "gray.800"}>
                             {label}
                         </Text>
                     ))}

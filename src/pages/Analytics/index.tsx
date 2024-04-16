@@ -1,55 +1,54 @@
 import React, { useEffect, useState } from 'react';
-import { Box } from '@chakra-ui/react';
 import MoodChart from '../../components/LineChart';
+import { Box, Center, Text } from '@chakra-ui/react';
 import { auth, db } from '../../utils/Firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import moment from 'moment';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import dayjs from 'dayjs';
 
 const Analytics = () => {
     const [moodData, setMoodData] = useState([]);
 
     useEffect(() => {
-        const fetchMoodData = async () => {
-            try {
-                const user = auth.currentUser;
-                if (user) {
-                    const userId = user.uid;
-                    const moodDataQuery = query(collection(db, 'moodData'), where('userId', '==', userId));
-                    const querySnapshot = await getDocs(moodDataQuery);
+        const user = auth.currentUser;
+        if (user) {
+            const userId = user.uid;
+            const moodDataQuery = query(collection(db, 'moodData'), where('userId', '==', userId));
 
-                    const moodData = querySnapshot.docs.map((doc) => doc.data());
-                    console.log('Mood data retrieved: ', moodData);
-                    const sortedMoodData = moodData.sort((a, b) => {
-                        return moment(a.time).valueOf() - moment(b.time).valueOf();
-                    });
+            const unsubscribe = onSnapshot(moodDataQuery, (querySnapshot) => {
+                const moodData = querySnapshot.docs.map((doc) => doc.data());
+                console.log('Mood data retrieved: ', moodData);
 
-                    const formattedMoodData = sortedMoodData.map((data) => {
-                        const timestamp = data.time;
-                        const formattedTimestamp = moment(timestamp).format('DD/MM HH:mm');
-                        return {
-                            ...data,
-                            time: formattedTimestamp,
-                        };
-                    });
-                    setMoodData(formattedMoodData);
-                } else {
-                    console.log('User not authenticated');
-                    setMoodData([]);
-                }
-            } catch (error) {
-                console.error('Error fetching mood data: ', error);
-                setMoodData([]);
-            }
-        };
+                const sortedMoodData = moodData.sort((a, b) => {
+                    return dayjs(a.time).valueOf() - dayjs(b.time).valueOf();
+                });
 
-        fetchMoodData();
+                const formattedMoodData = sortedMoodData.map((data) => {
+                    const timestamp = data.time;
+                    const formattedTimestamp = dayjs(timestamp).format('DD/MM HH:mm');
+                    return {
+                        ...data,
+                        time: formattedTimestamp,
+                    };
+                });
+
+                setMoodData(formattedMoodData);
+            });
+
+            // Limpeza: desinscrever do snapshot ao desmontar o componente
+            return () => unsubscribe();
+        } else {
+            console.log('User not authenticated');
+            setMoodData([]);
+        }
     }, []);
 
     return (
-        <div>
-            <h2>Mood Analytics</h2>
+        <Box>
+            <Center>
+                <Text fontSize="2xl" fontWeight="bold" my={5}>Analises de humor</Text>
+            </Center>
             <MoodChart data={moodData} />
-        </div>
+        </Box>
     );
 };
 

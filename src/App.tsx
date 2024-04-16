@@ -2,9 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 import LoginPage from './pages/Login';
+import RegisterPage from './pages/Register'; // Ensure you have this component
 import EmotionMether from './pages/EmotionMether';
 import Analytics from './pages/Analytics';
-import BottomMenu from '../src/components/BottonMenu';
+import BottomMenu from './components/BottonMenu';
+import WelcomePage from './pages/Welcome'; // Import WelcomePage
 import { auth } from './utils/Firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
@@ -30,7 +32,11 @@ const App = () => {
         </>
       ) : (
         <Routes>
-          <Route path="*" element={<LoginPage />} />
+          <Route path="/" element={<WelcomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          {/* Redirect all other paths to WelcomePage */}
+          <Route path="*" element={<WelcomePage />} />
         </Routes>
       )}
     </Router>

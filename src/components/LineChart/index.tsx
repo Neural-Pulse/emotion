@@ -2,7 +2,8 @@ import React, { useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { Button } from '@chakra-ui/react';
+import { Button, Box } from '@chakra-ui/react'; // Import Box from Chakra UI
+import dayjs from 'dayjs';
 
 const MoodChart = ({ data }) => {
     const moodStates = [
@@ -14,6 +15,8 @@ const MoodChart = ({ data }) => {
     ];
 
     const chartRef = useRef(null);
+
+
     const handleExportPDF = async () => {
         const chart = chartRef.current;
         const canvas = await html2canvas(chart);
@@ -31,37 +34,46 @@ const MoodChart = ({ data }) => {
         const availableHeight = pdf.internal.pageSize.getHeight() - marginTop - marginBottom;
 
         // Add title
-        const title = 'Mood Chart';
+        const title = 'Afetivograma';
         pdf.setFontSize(18);
         pdf.text(title, marginLeft, marginTop);
 
         // Add chart image
         const imgProps = pdf.getImageProperties(imgData);
         const chartWidth = availableWidth;
-        const chartHeight = (imgProps.height * chartWidth) / imgProps.width;
-        pdf.addImage(imgData, 'PNG', marginLeft, marginTop + 10, chartWidth, chartHeight);
+        // Aumenta a altura do gráfico. Ajuste este valor conforme necessário.
+        const chartHeightIncreaseFactor = 1.5; // Fator de aumento da altura do gráfico
+        const chartHeight = ((imgProps.height * chartWidth) / imgProps.width) * chartHeightIncreaseFactor;
 
-        pdf.save('mood_chart.pdf');
+        // Certifique-se de que a altura do gráfico não exceda o espaço disponível na página
+        const finalChartHeight = Math.min(chartHeight, availableHeight);
+
+        pdf.addImage(imgData, 'PNG', marginLeft, marginTop + 10, chartWidth, finalChartHeight);
+
+        const dateTimeNow = dayjs().format('YYYYMMDD_HHmmss'); // Exemplo: 20231004_153045
+        const fileName = `afetivograma_${dateTimeNow}.pdf`;
+
+        pdf.save(fileName);
     };
 
 
     return (
-        <div>
+        <Box m={10}> {/* Aplica margem ao redor do componente */}
             <Button onClick={handleExportPDF} mb={4}>
-                Export as PDF
+                Exportar PDF
             </Button>
             <div ref={chartRef}>
                 <ResponsiveContainer width="100%" height={400}>
                     <LineChart data={data}>
-                        <XAxis dataKey="time" />
-                        <YAxis type="category" dataKey="moodState" domain={moodStates} />
+                        <XAxis dataKey="time" angle={-90} textAnchor="end" height={100} />
+                        <YAxis width={400} type="category" dataKey="moodState" domain={moodStates} />
                         <CartesianGrid strokeDasharray="3 3" />
                         <Tooltip />
                         <Line type="stepAfter" dataKey="moodState" stroke="#8884d8" />
                     </LineChart>
                 </ResponsiveContainer>
             </div>
-        </div>
+        </Box>
     );
 };
 

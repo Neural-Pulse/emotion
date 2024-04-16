@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../utils/Firebase';
 import {
     Box,
@@ -10,34 +10,28 @@ import {
     Heading,
     Input,
     Stack,
-    Text,
     useColorModeValue,
     useToast,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
-const LoginPage = () => {
+const RegisterPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const toast = useToast();
-    const navigate = useNavigate(); // Create an instance of navigate
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await signInWithEmailAndPassword(auth, email, password);
-            // Login successful, navigate to the home page
+            await createUserWithEmailAndPassword(auth, email, password);
             toast({
-                title: 'Login Successful',
+                title: 'Registration Successful',
                 status: 'success',
                 duration: 3000,
                 isClosable: true,
             });
-            navigate('/'); // Navigate to the home page
         } catch (error) {
-            // Handle login error
             toast({
-                title: 'Login Failed',
+                title: 'Registration Failed',
                 description: error.message,
                 status: 'error',
                 duration: 3000,
@@ -57,9 +51,9 @@ const LoginPage = () => {
                 textAlign="center"
             >
                 <Heading as="h2" size="xl" textAlign="center" mb={5}>
-                    Login
+                    Register
                 </Heading>
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleRegister}>
                     <Stack spacing={4}>
                         <FormControl id="email">
                             <FormLabel>Email address</FormLabel>
@@ -78,19 +72,13 @@ const LoginPage = () => {
                             />
                         </FormControl>
                         <Button type="submit" colorScheme="blue" size="lg" fontSize="md">
-                            Sign in
+                            Register
                         </Button>
                     </Stack>
                 </form>
-                <Text mt={4}>
-                    Don't have an account?{' '}
-                    <Button variant="link" colorScheme="blue">
-                        Sign up
-                    </Button>
-                </Text>
             </Box>
         </Center>
     );
 };
 
-export default LoginPage;
+export default RegisterPage;
