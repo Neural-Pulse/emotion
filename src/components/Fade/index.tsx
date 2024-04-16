@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { addDoc, collection } from 'firebase/firestore';
 import { auth, db } from '../../utils/Firebase';
+import { encryptData } from '../../utils/crypto';
 
 const FadeSelect = () => {
     const [sliderValue, setSliderValue] = useState(0);
@@ -59,10 +60,14 @@ const FadeSelect = () => {
                 const moodState = stageLabels[stageLabels.length - 1 - sliderValue];
                 const timestamp = new Date().toISOString();
 
-                await addDoc(collection(db, 'moodData'), {
+                const encryptedMoodData = encryptData({
                     userId: userId,
                     moodState: moodState,
                     time: timestamp,
+                });
+
+                await addDoc(collection(db, 'moodData'), {
+                    data: encryptedMoodData
                 });
                 console.log('Mood data saved with ID: ');
                 setShowAlert(true);
@@ -72,7 +77,7 @@ const FadeSelect = () => {
             }
         } catch (error) {
             console.error('Error saving mood data: ', error);
-            setIsButtonDisabled(false); // Em caso de erro, reabilita o botão imediatamente
+            setIsButtonDisabled(false);
         }
     };
 

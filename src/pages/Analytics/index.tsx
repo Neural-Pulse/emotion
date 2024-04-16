@@ -4,6 +4,7 @@ import { Box, Center, Text } from '@chakra-ui/react';
 import { auth, db } from '../../utils/Firebase';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import dayjs from 'dayjs';
+import { decryptData } from '../../utils/crypto'; // Certifique-se de que este é o caminho correto
 
 interface MoodData {
     time: string;
@@ -20,22 +21,25 @@ const Analytics = () => {
             const moodDataQuery = query(collection(db, 'moodData'), where('userId', '==', userId));
 
             const unsubscribe = onSnapshot(moodDataQuery, (querySnapshot) => {
-                const moodData = querySnapshot.docs.map((doc) => doc.data());
-                console.log('Mood data retrieved: ', moodData);
-
-                const sortedMoodData = moodData.sort((a, b) => {
-                    return dayjs(a.time).valueOf() - dayjs(b.time).valueOf();
-                });
-
-                const formattedMoodData = sortedMoodData.map((data) => {
-                    const timestamp = data.time;
-                    const formattedTimestamp = dayjs(timestamp).format('DD/MM HH:mm');
+                const decryptedMoodData = querySnapshot.docs.map((doc) => {
+                    const encryptedData = doc.data();
+                    // Assume que moodState é o campo criptografado e precisa ser descriptografado
+                    const decryptedData = decryptData(encryptedData.moodState) as MoodData;
                     return {
-                        ...data,
-                        time: formattedTimestamp,
-                        moodState: data.moodState
+                        ...encryptedData,
+                        moodState: decryptedData.moodState,
+                        time: encryptedData.time // Mantém o campo de tempo como está
                     };
                 });
+
+                console.log('Mood data retrieved and decrypted: ', decryptedMoodData);
+
+                const sortedMoodData = decryptedMoodData.sort((a, b) => dayjs(a.time).valueOf() - dayjs(b.time).valueOf());
+
+                const formattedMoodData = sortedMoodData.map((data) => ({
+                    ...data,
+                    time: dayjs(data.time).format('DD/MM HH:mm'), // Formata a data
+                }));
 
                 setMoodData(formattedMoodData);
             });
@@ -51,7 +55,7 @@ const Analytics = () => {
     return (
         <Box>
             <Center>
-                <Text fontSize="2xl" fontWeight="bold" my={5}>Analises de humor</Text>
+                <Text fontSize="2xl" fontWeight="bold" my={5}>Análises de Humor</Text>
             </Center>
             <MoodChart data={moodData} />
         </Box>
