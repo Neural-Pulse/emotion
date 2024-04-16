@@ -66,7 +66,6 @@ const FadeSelect = () => {
             <Flex>
                 <VStack spacing={8} mr={4} align="stretch">
                     {stageLabels.map((label, index) => (
-                        // Inverte a lógica de coloração para corresponder à inversão do valor do slider
                         <Text key={index} fontSize={12} color={sliderValue === (stageLabels.length - 1 - index) ? theme.colors.brand.mintGreen : "gray.800"}>
                             {label}
                         </Text>
