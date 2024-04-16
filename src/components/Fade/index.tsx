@@ -63,7 +63,7 @@ const FadeSelect = () => {
 
     return (
         <Flex direction="column" align="center" justify="center" height="100vh">
-            <Text mb="20px">Selecione o Estágio:</Text>
+            <Text mb="40px" fontSize={40}>Selecione o Estágio:</Text>
             <Flex>
                 <VStack spacing={8} mr={4} align="stretch">
                     {stageLabels.map((label, index) => (
