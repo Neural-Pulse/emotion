@@ -1,16 +1,14 @@
-import React from 'react';
 import FadeSelect from "../../components/Fade";
 import { Flex, useTheme, Button, Box } from '@chakra-ui/react';
-import { auth } from '../../utils/Firebase'; // Ensure this path is correct
+import { auth } from '../../utils/Firebase';
 import { signOut } from 'firebase/auth';
 
 const EmotionMether = () => {
-    const theme = useTheme(); // Use the hook useTheme to access the theme
+    const theme = useTheme();
 
     const handleLogout = async () => {
         try {
             await signOut(auth);
-            // Optionally, redirect the user to the login page or show a message
         } catch (error) {
             console.error("Logout error:", error);
         }
@@ -21,7 +19,7 @@ const EmotionMether = () => {
             <Box p={4} alignSelf="flex-end">
                 <Button colorScheme="red" onClick={handleLogout}>Logout</Button>
             </Box>
-            <Flex flex={1} align="center" justify="center">
+            <Flex flex={1} align="center" justify="center" mt={-10}> {/* Ajuste aqui */}
                 <FadeSelect />
             </Flex>
         </Flex>

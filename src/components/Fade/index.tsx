@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { SetStateAction, useState } from 'react';
 import {
     Box,
     Slider,
@@ -23,7 +23,7 @@ const FadeSelect = () => {
     const [showAlert, setShowAlert] = useState(false);
     const theme = useTheme();
 
-    const handleChange = (value: React.SetStateAction<number>) => {
+    const handleChange = (value: SetStateAction<number>) => {
         setSliderValue(value);
     };
 
@@ -32,19 +32,18 @@ const FadeSelect = () => {
             const user = auth.currentUser;
             if (user) {
                 const userId = user.uid;
-                const moodState = stageLabels[sliderValue];
+                // Ajusta para persistir o estado correto baseado na inversão do valor do slider
+                const moodState = stageLabels[stageLabels.length - 1 - sliderValue];
                 const timestamp = new Date().toISOString();
 
-                const docRef = await addDoc(collection(db, 'moodData'), {
+                await addDoc(collection(db, 'moodData'), {
                     userId: userId,
                     moodState: moodState,
                     time: timestamp,
                 });
-                console.log('Mood data saved with ID: ', docRef.id);
+                console.log('Mood data saved with ID: ');
                 setShowAlert(true);
-                setTimeout(() => {
-                    setShowAlert(false);
-                }, 3000);
+                setTimeout(() => setShowAlert(false), 3000);
             } else {
                 console.log('User not authenticated');
             }
@@ -67,12 +66,13 @@ const FadeSelect = () => {
             <Flex>
                 <VStack spacing={8} mr={4} align="stretch">
                     {stageLabels.map((label, index) => (
-                        <Text key={index} fontSize={12} color={sliderValue === (stageLabels.length - 1 - index) ? theme.colors.brand.coral : "gray.800"}>
+                        // Inverte a lógica de coloração para corresponder à inversão do valor do slider
+                        <Text key={index} fontSize={12} color={sliderValue === (stageLabels.length - 1 - index) ? theme.colors.brand.mintGreen : "gray.800"}>
                             {label}
                         </Text>
                     ))}
                 </VStack>
-                <Slider defaultValue={0} min={0} max={4} step={1} onChange={handleChange} orientation='vertical'>
+                <Slider defaultValue={0} min={0} max={stageLabels.length - 1} step={1} onChange={handleChange} orientation='vertical'>
                     <SliderTrack bg={theme.colors.brand.softYellow}>
                         <SliderFilledTrack bg={theme.colors.brand.mintGreen} />
                     </SliderTrack>
@@ -80,13 +80,6 @@ const FadeSelect = () => {
                         bg: theme.colors.brand.lightBlue,
                         border: '2px solid white',
                         boxShadow: `0px 0px 0px 4px ${theme.colors.brand.lightBlue}`,
-                        _hover: {
-                            bg: theme.colors.brand.lightBlue,
-                            boxShadow: `0px 0px 0px 4px ${theme.colors.brand.lightBlue}`,
-                        },
-                        _focus: {
-                            boxShadow: `0px 0px 0px 4px ${theme.colors.brand.lightBlue}`,
-                        }
                     }} />
                 </Slider>
             </Flex>
@@ -95,7 +88,7 @@ const FadeSelect = () => {
             {showAlert && (
                 <Alert status="success" mt="4" borderRadius="md">
                     <AlertIcon />
-                    <Box>
+                    <Box flex="1">
                         <AlertTitle>Sucesso!</AlertTitle>
                         <AlertDescription>Os dados de humor foram salvos com sucesso.</AlertDescription>
                     </Box>

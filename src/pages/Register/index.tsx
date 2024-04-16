@@ -10,14 +10,21 @@ import {
     Heading,
     Input,
     Stack,
+    Text,
     useColorModeValue,
     useToast,
+    useTheme
 } from '@chakra-ui/react';
+import { FirebaseError } from 'firebase/app';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const toast = useToast();
+    const navigate = useNavigate();
+
+    const theme = useTheme();
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,14 +37,22 @@ const RegisterPage = () => {
                 isClosable: true,
             });
         } catch (error) {
-            toast({
-                title: 'Registration Failed',
-                description: error.message,
-                status: 'error',
-                duration: 3000,
-                isClosable: true,
-            });
+            if (error instanceof FirebaseError) {
+                toast({
+                    title: 'Registration Failed',
+                    description: error.message,
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            } else {
+                console.error('An unknown error occurred:', error);
+            }
         }
+    };
+
+    const handleNavigateToLogin = () => {
+        navigate('/login');
     };
 
     return (
@@ -50,13 +65,13 @@ const RegisterPage = () => {
                 p={6}
                 textAlign="center"
             >
-                <Heading as="h2" size="xl" textAlign="center" mb={5}>
-                    Register
+                <Heading as="h2" size="xl" textAlign="center" mb={5} color={theme.colors.brand.mintGreen}>
+                    Cadastrar
                 </Heading>
                 <form onSubmit={handleRegister}>
                     <Stack spacing={4}>
                         <FormControl id="email">
-                            <FormLabel>Email address</FormLabel>
+                            <FormLabel>Email</FormLabel>
                             <Input
                                 type="email"
                                 value={email}
@@ -72,10 +87,16 @@ const RegisterPage = () => {
                             />
                         </FormControl>
                         <Button type="submit" colorScheme="blue" size="lg" fontSize="md">
-                            Register
+                            Cadastrar
                         </Button>
                     </Stack>
                 </form>
+                <Text mt={4}>
+                    Já possui uma conta?{' '}
+                    <Button variant="link" colorScheme="blue" onClick={handleNavigateToLogin}>
+                        Login
+                    </Button>
+                </Text>
             </Box>
         </Center>
     );

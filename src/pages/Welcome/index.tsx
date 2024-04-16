@@ -1,11 +1,11 @@
-import React from 'react';
-import { Center, Button, VStack } from '@chakra-ui/react';
+import { Center, Button, VStack, Image } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 
 const WelcomePage = () => {
     return (
         <Center h="100vh">
             <VStack spacing={4}>
+                <Image src="/pwa-512x512.png" boxSize="100px" alt="Logo" />
                 <Button colorScheme="blue" as={Link} to="/login">
                     Login
                 </Button>

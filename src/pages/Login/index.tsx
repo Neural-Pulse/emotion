@@ -13,37 +13,45 @@ import {
     Text,
     useColorModeValue,
     useToast,
+    useTheme
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const toast = useToast();
-    const navigate = useNavigate(); // Create an instance of navigate
+    const navigate = useNavigate();
 
+    const theme = useTheme();
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            // Login successful, navigate to the home page
             toast({
                 title: 'Login Successful',
                 status: 'success',
                 duration: 3000,
                 isClosable: true,
             });
-            navigate('/'); // Navigate to the home page
+            navigate('/');
         } catch (error) {
-            // Handle login error
-            toast({
-                title: 'Login Failed',
-                description: error.message,
-                status: 'error',
-                duration: 3000,
-                isClosable: true,
-            });
+            if (error instanceof Error) {
+                toast({
+                    title: 'Login Failed',
+                    description: error.message,
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            } else {
+                console.error('An unknown error occurred:', error);
+            }
         }
+    };
+
+    const handleNavigateToRegister = () => {
+        navigate('/register');
     };
 
     return (
@@ -56,13 +64,13 @@ const LoginPage = () => {
                 p={6}
                 textAlign="center"
             >
-                <Heading as="h2" size="xl" textAlign="center" mb={5}>
+                <Heading as="h2" size="xl" textAlign="center" mb={5} color={theme.colors.brand.mintGreen}>
                     Login
                 </Heading>
                 <form onSubmit={handleLogin}>
                     <Stack spacing={4}>
                         <FormControl id="email">
-                            <FormLabel>Email address</FormLabel>
+                            <FormLabel>Email</FormLabel>
                             <Input
                                 type="email"
                                 value={email}
@@ -78,14 +86,14 @@ const LoginPage = () => {
                             />
                         </FormControl>
                         <Button type="submit" colorScheme="blue" size="lg" fontSize="md">
-                            Sign in
+                            Entrar
                         </Button>
                     </Stack>
                 </form>
                 <Text mt={4}>
-                    Don't have an account?{' '}
-                    <Button variant="link" colorScheme="blue">
-                        Sign up
+                    Ainda não possui cadastro?{' '}
+                    <Button variant="link" colorScheme="blue" onClick={handleNavigateToRegister}>
+                        Cadastrar
                     </Button>
                 </Text>
             </Box>
