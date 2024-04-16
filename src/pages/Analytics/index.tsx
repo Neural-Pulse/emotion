@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import MoodChart from '../../components/LineChart';
 import { Box, Center, Text } from '@chakra-ui/react';
 import { auth, db } from '../../utils/Firebase';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, query, onSnapshot } from 'firebase/firestore';
 import dayjs from 'dayjs';
-import { decryptData } from '../../utils/crypto'; // Certifique-se de que este é o caminho correto
+import { decryptData } from '../../utils/crypto';
 
 interface MoodData {
     time: string;
@@ -18,17 +18,17 @@ const Analytics = () => {
         const user = auth.currentUser;
         if (user) {
             const userId = user.uid;
-            const moodDataQuery = query(collection(db, 'moodData'), where('userId', '==', userId));
+            // Ajusta a consulta para a nova estrutura de dados
+            const moodDataQuery = query(collection(db, `moodData/${userId}/moodData`));
 
             const unsubscribe = onSnapshot(moodDataQuery, (querySnapshot) => {
                 const decryptedMoodData = querySnapshot.docs.map((doc) => {
-                    const encryptedData = doc.data();
-                    // Assume que moodState é o campo criptografado e precisa ser descriptografado
-                    const decryptedData = decryptData(encryptedData.moodState) as MoodData;
+                    const encryptedData = doc.data().data; // Acessa o campo 'data' que contém os dados criptografados
+                    // Descriptografa os dados
+                    const decryptedData = decryptData(encryptedData) as MoodData;
                     return {
-                        ...encryptedData,
-                        moodState: decryptedData.moodState,
-                        time: encryptedData.time // Mantém o campo de tempo como está
+                        time: decryptedData.time, // Usa o campo de tempo descriptografado
+                        moodState: decryptedData.moodState, // Usa o estado de humor descriptografado
                     };
                 });
 

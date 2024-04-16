@@ -1,6 +1,10 @@
 import { AES, enc } from 'crypto-js';
 
-const secretKey = 'sua_chave_secreta_aqui'; // Mantenha esta chave segura e não a exponha
+const secretKey = import.meta.env.VITE_SECRET_CRYPT_KEY; // Keep this key safe and do not expose it
+
+if (!secretKey) {
+    throw new Error('VITE_SECRET_CRYPT_KEY is not set');
+}
 
 // Função para criptografar os dados
 export const encryptData = (data: any) => {
