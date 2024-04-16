@@ -1,4 +1,4 @@
-import { SetStateAction, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Slider,
@@ -21,18 +21,41 @@ import { auth, db } from '../../utils/Firebase';
 const FadeSelect = () => {
     const [sliderValue, setSliderValue] = useState(0);
     const [showAlert, setShowAlert] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [timeRemaining, setTimeRemaining] = useState(0);
     const theme = useTheme();
 
-    const handleChange = (value: SetStateAction<number>) => {
+    useEffect(() => {
+        let interval: string | number | NodeJS.Timeout | undefined;
+        if (isButtonDisabled) {
+            interval = setInterval(() => {
+                setTimeRemaining((prevTime) => {
+                    if (prevTime <= 1) {
+                        clearInterval(interval);
+                        setIsButtonDisabled(false);
+                        return 0;
+                    }
+                    return prevTime - 1;
+                });
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [isButtonDisabled]);
+
+    const handleChange = (value: React.SetStateAction<number>) => {
         setSliderValue(value);
     };
 
     const handleSave = async () => {
+        if (isButtonDisabled) return;
+
+        setIsButtonDisabled(true);
+        setTimeRemaining(180); // 3 minutos em segundos
+
         try {
             const user = auth.currentUser;
             if (user) {
                 const userId = user.uid;
-                // Ajusta para persistir o estado correto baseado na inversão do valor do slider
                 const moodState = stageLabels[stageLabels.length - 1 - sliderValue];
                 const timestamp = new Date().toISOString();
 
@@ -49,6 +72,7 @@ const FadeSelect = () => {
             }
         } catch (error) {
             console.error('Error saving mood data: ', error);
+            setIsButtonDisabled(false); // Em caso de erro, reabilita o botão imediatamente
         }
     };
 
@@ -82,8 +106,12 @@ const FadeSelect = () => {
                     }} />
                 </Slider>
             </Flex>
-            <Button colorScheme="blue" mt="4" onClick={handleSave}>Salvar</Button>
-
+            <Button colorScheme="blue" mt="4" onClick={handleSave} isDisabled={isButtonDisabled}>Salvar</Button>
+            {isButtonDisabled && (
+                <Text mt={2}>
+                    Você pode registrar uma nova emoção em: {timeRemaining} segundos
+                </Text>
+            )}
             {showAlert && (
                 <Alert status="success" mt="4" borderRadius="md">
                     <AlertIcon />
