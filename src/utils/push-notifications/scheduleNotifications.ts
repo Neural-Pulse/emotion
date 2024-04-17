@@ -1,4 +1,5 @@
 // src/scheduleNotification.ts
+// src/scheduleNotification.ts
 import { sendNotification } from './notify';
 
 function getNextNotificationTime(hours: number, minutes: number = 0): number {
@@ -23,6 +24,8 @@ export function scheduleNotifications() {
         const delay = getNextNotificationTime(hour);
         setTimeout(() => {
             sendNotification('Mensagem', message);
+            sendNotification('Mensagem', message);
         }, delay);
     });
 }
+
