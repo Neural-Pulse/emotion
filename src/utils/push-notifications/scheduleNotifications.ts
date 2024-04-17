@@ -1,11 +1,10 @@
+// src/scheduleNotification.ts
 import { sendNotification } from './notify';
-
 
 function getNextNotificationTime(hours: number, minutes: number = 0): number {
     const now = new Date();
     let next = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
 
-    // Se já passou a hora hoje, agende para o próximo dia
     if (now >= next) {
         next = new Date(next.getTime() + 86400000); // Adiciona um dia em milissegundos
     }
@@ -14,12 +13,16 @@ function getNextNotificationTime(hours: number, minutes: number = 0): number {
 }
 
 export function scheduleNotifications() {
-    const times = [9, 17, 20]; // Horas para enviar notificações
+    const notifications = [
+        { hour: 9, message: "Bom dia =D Registre seu estado emocional" },
+        { hour: 17, message: "Boa tarde =D, Registre seu estado emocional?" },
+        { hour: 20, message: "Boa noite =D, Registre seu estado emocional" }
+    ];
 
-    times.forEach(time => {
-        const delay = getNextNotificationTime(time);
+    notifications.forEach(({ hour, message }) => {
+        const delay = getNextNotificationTime(hour);
         setTimeout(() => {
-            sendNotification('Scheduled Notification', { body: `It's ${time}:00!` });
+            sendNotification('Mensagem', message);
         }, delay);
     });
 }

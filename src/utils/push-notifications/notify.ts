@@ -7,9 +7,9 @@ export async function requestNotificationPermission() {
     }
 }
 
-export function sendNotification(title: string, options?: NotificationOptions) {
+export function sendNotification(title: string, message: string) {
     if (Notification.permission === "granted") {
-        new Notification(title, options);
+        new Notification(title, { body: message });
     } else {
         console.log("Notification permission not granted.");
     }
