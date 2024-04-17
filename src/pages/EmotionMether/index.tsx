@@ -1,6 +1,6 @@
 import FadeSelect from "../../components/Fade";
 import { Flex, useTheme, Button, Box } from '@chakra-ui/react';
-import { auth } from '../../utils/Firebase';
+import { auth } from '../../utils/firebase';
 import { signOut } from 'firebase/auth';
 
 const EmotionMether = () => {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../utils/Firebase';
+import { auth } from '../../utils/firebase';
 import {
     Box,
     Button,

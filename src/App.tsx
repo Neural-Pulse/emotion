@@ -1,16 +1,24 @@
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 import LoginPage from './pages/Login';
-import RegisterPage from './pages/Register'; // Ensure you have this component
+import RegisterPage from './pages/Register';
 import EmotionMether from './pages/EmotionMether';
 import Analytics from './pages/Analytics';
 import BottomMenu from './components/BottonMenu';
-import WelcomePage from './pages/Welcome'; // Import WelcomePage
-import { auth } from './utils/Firebase';
+import WelcomePage from './pages/Welcome';
+import { auth } from './utils/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { setupNotifications } from './utils/push-notifications/notificationSetup'; // Importe a função setupNotifications
 
 const App = () => {
   const [user, loading] = useAuthState(auth);
+
+  useEffect(() => {
+    if (!loading) {
+      setupNotifications(); // Chame setupNotifications quando o loading terminar
+    }
+  }, [loading]); // Dependência para re-executar quando o estado de loading mudar
 
   if (loading) {
     return <div>Loading...</div>;
