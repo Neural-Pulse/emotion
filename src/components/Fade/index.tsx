@@ -16,7 +16,7 @@ import {
     useTheme,
 } from '@chakra-ui/react';
 import { doc, setDoc, collection } from 'firebase/firestore';
-import { auth, db } from '../../utils/Firebase';
+import { auth, db } from '../../utils/firebase';
 import { encryptData } from '../../utils/crypto';
 
 const FadeSelect = () => {

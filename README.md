@@ -1,30 +1,42 @@
-# React + TypeScript + Vite
+# Emotion - Afetivograma PWA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Emotion é um Progressive Web App (PWA) desenvolvido com React, TypeScript e Vite, com o objetivo de criar afetivogramas. Um afetivograma é uma representação visual das emoções e sentimentos de uma pessoa ao longo do tempo, permitindo uma análise profunda do bem-estar emocional. Este aplicativo oferece uma interface intuitiva para registrar e visualizar essas emoções, tornando-o uma ferramenta valiosa para a autoconsciência e a saúde mental.
 
-Currently, two official plugins are available:
+## Características Principais
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Registro de Emoções:** Interface fácil de usar para registrar rapidamente suas emoções e sentimentos.
+- **Visualização de Dados:** Utiliza Chart.js e Recharts para visualizar afetivogramas, permitindo análises temporais das emoções registradas.
+- **PWA:** Totalmente funcional como um Progressive Web App, permitindo uso offline e uma experiência de usuário semelhante a um aplicativo nativo.
+- **Integração com Firebase:** Para armazenamento de dados e autenticação de usuários.
+- **Design Responsivo:** Utiliza Chakra UI para garantir uma experiência de usuário consistente em dispositivos móveis e desktops.
 
-## Expanding the ESLint configuration
+## Começando
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Para utilizar o Emotion, clone o repositório e instale as dependências:
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```bash 
+git clone https://github.com/Neural-Pulse/emotion cd emotion yarn install
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+### Desenvolvimento
+
+Para iniciar o servidor de desenvolvimento:
+
+```bash
+yarn dev
+```
+### Construção
+
+Para construir o projeto para produção:
+```bash
+yarn build
+```
+### Lint
+
+Para verificar a qualidade do código:
+``` bash
+yarn lint
+```
+## Licença
+
+Este projeto está licenciado sob a GNU General Public License v3.0 - veja o arquivo [LICENSE](LICENSE) para detalhes.

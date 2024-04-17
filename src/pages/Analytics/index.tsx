@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import MoodChart from '../../components/LineChart';
 import { Box, Center, Text } from '@chakra-ui/react';
-import { auth, db } from '../../utils/Firebase';
+import { auth, db } from '../../utils/firebase';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import dayjs from 'dayjs';
 import { decryptData } from '../../utils/crypto';
