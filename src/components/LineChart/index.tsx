@@ -32,7 +32,6 @@ const MoodChart = ({ data }: MoodChartProps) => {
     }, []);
 
     const handleExportPDF = async () => {
-        // Captura o gráfico com html2canvas
         if (chartRef.current) {
             const canvas = await html2canvas(chartRef.current, {
                 useCORS: true,
@@ -43,24 +42,28 @@ const MoodChart = ({ data }: MoodChartProps) => {
             const imgWidth = canvas.width;
             const imgHeight = canvas.height;
 
-            // Calcula o tamanho e as margens do PDF baseado no tamanho do gráfico capturado
-            const pdfMargin = 10; // Margem para o PDF em pontos
-            const pdfWidth = imgWidth + pdfMargin * 2; // Largura do PDF incluindo margens
-            const pdfHeight = imgHeight + pdfMargin * 2; // Altura do PDF incluindo margens
-
-            // Cria um novo documento PDF com o tamanho calculado
+            // Define as dimensões do PDF para A4 em retrato
             const pdf = new jsPDF({
                 orientation: 'l',
-                unit: 'pt',
-                format: [pdfWidth, pdfHeight],
+                unit: 'mm',
+                format: 'a4'
             });
 
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const pdfMargin = 10; // Margem para o PDF em mm
+
+            // Calcula a largura e altura da imagem para caber dentro do PDF com margens
+            const imgScaledWidth = pageWidth - 2 * pdfMargin;
+            const imgScaledHeight = imgHeight * (imgScaledWidth / imgWidth);
+
             const title = "Afetivograma";
-            const titleSize = 20; // Tamanho da fonte para o título
+            const titleSize = 12; // Tamanho da fonte para o título
             pdf.setFontSize(titleSize);
-            pdf.text(title, 20, 30); // Posiciona o título no PDF
+            pdf.text(title, pdfMargin, 20); // Posiciona o título no PDF
+
             // Adiciona a imagem do gráfico ao PDF com as margens definidas
-            pdf.addImage(imgData, 'PNG', pdfMargin, pdfMargin, imgWidth, imgHeight);
+            pdf.addImage(imgData, 'PNG', pdfMargin, 25, imgScaledWidth, imgScaledHeight);
 
             // Gera o nome do arquivo com a data e hora atual
             const dateTimeNow = dayjs().format('YYYYMMDD_HHmmss');
@@ -68,8 +71,8 @@ const MoodChart = ({ data }: MoodChartProps) => {
 
             // Salva o PDF
             pdf.save(fileName);
-        };
-    }
+        }
+    };
 
 
 
