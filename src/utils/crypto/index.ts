@@ -12,8 +12,18 @@ export const encryptData = (data: any) => {
 };
 
 // Função para descriptografar os dados
+// crypto/index.ts
 export const decryptData = (ciphertext: string | CryptoJS.lib.CipherParams) => {
-    const bytes = AES.decrypt(ciphertext, secretKey);
-    const decryptedData = JSON.parse(bytes.toString(enc.Utf8));
-    return decryptedData;
+    try {
+        const bytes = AES.decrypt(ciphertext, secretKey);
+        const decryptedText = bytes.toString(enc.Utf8);
+        if (!decryptedText) {
+            console.error("Decryption returned empty or invalid string:", decryptedText);
+            return null;
+        }
+        return JSON.parse(decryptedText);
+    } catch (error) {
+        console.error("Failed to decrypt or parse data:", error);
+        return null;
+    }
 };
