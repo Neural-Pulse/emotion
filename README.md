@@ -2,6 +2,7 @@
 
 Emotion é um Progressive Web App (PWA) desenvolvido com React, TypeScript e Vite, com o objetivo de criar afetivogramas. Um afetivograma é uma representação visual das emoções e sentimentos de uma pessoa ao longo do tempo, permitindo uma análise profunda do bem-estar emocional. Este aplicativo oferece uma interface intuitiva para registrar e visualizar essas emoções, tornando-o uma ferramenta valiosa para a autoconsciência e a saúde mental.
 
+Documentação completa: [Emotion doc](https://docs-emotion.neuralpulse.dev/introdu%C3%A7%C3%A3o.html)
 ## Características Principais
 
 - **Registro de Emoções:** Interface fácil de usar para registrar rapidamente suas emoções e sentimentos.
