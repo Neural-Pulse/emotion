@@ -10,7 +10,7 @@ permissions:
   pages: write
 
 env:
-  INSTANCE: 'Writerside/hi'
+  INSTANCE: 'Writerside/em'
   ARTIFACT: 'webHelpHI2-all.zip'
   DOCKER_VERSION: '233.14938'
 
