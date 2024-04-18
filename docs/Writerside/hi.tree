@@ -6,9 +6,9 @@
                  name="Help Instance"
                  start-page="Introdução.md">
 
+    <toc-element topic="Introdução.md"/>
+    <toc-element topic="Estrutura.md"/>
+    <toc-element topic="Arquitetura.md"/>
     <toc-element topic="Telas.md"/>
     <toc-element topic="Git.md"/>
-    <toc-element topic="Estrutura.md"/>
-    <toc-element topic="Introdução.md"/>
-    <toc-element topic="Arquitetura.md"/>
 </instance-profile>
