@@ -3,7 +3,7 @@
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
 
 <instance-profile id="em"
-                 name="Emotion"
+                 name="Emotion Docs"
                  start-page="Introdução.md">
 
     <toc-element topic="Introdução.md"/>
