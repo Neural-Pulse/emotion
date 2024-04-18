@@ -50,7 +50,7 @@ const MoodChart = ({ data }: MoodChartProps) => {
             });
 
             const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
+            //const pageHeight = pdf.internal.pageSize.getHeight();
             const pdfMargin = 10; // Margem para o PDF em mm
 
             // Calcula a largura e altura da imagem para caber dentro do PDF com margens
