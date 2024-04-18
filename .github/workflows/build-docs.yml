@@ -5,8 +5,12 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  pages: write
+
 env:
-  INSTANCE: 'Writerside/hi  '
+  INSTANCE: 'Writerside/hi'
   ARTIFACT: 'webHelpHI2-all.zip'
   DOCKER_VERSION: '233.14938'
 
@@ -46,7 +50,7 @@ jobs:
         uses: JetBrains/writerside-checker-action@v1
         with:
           instance: ${{ env.INSTANCE }}
-   deploy:
+  deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
