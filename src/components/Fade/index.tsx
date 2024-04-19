@@ -1,22 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Box,
-    Slider,
-    SliderTrack,
-    SliderFilledTrack,
-    SliderThumb,
-    Flex,
-    Text,
-    VStack,
-    Button,
-    Alert,
-    AlertIcon,
-    AlertTitle,
-    AlertDescription,
-    useTheme,
-} from '@chakra-ui/react';
+import { Flex, Text, VStack, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Button, useTheme, Alert, AlertIcon, AlertTitle, AlertDescription, Box } from '@chakra-ui/react';
 import { doc, setDoc, collection } from 'firebase/firestore';
-import { auth, db } from '../../utils/firebase';
+import { auth, db } from '../../utils/firebase'
 import { encryptData } from '../../utils/crypto';
 
 const FadeSelect = () => {
@@ -51,7 +36,7 @@ const FadeSelect = () => {
         if (isButtonDisabled) return;
 
         setIsButtonDisabled(true);
-        setTimeRemaining(180); // 3 minutos em segundos
+        setTimeRemaining(180);
 
         try {
             const user = auth.currentUser;
@@ -65,8 +50,9 @@ const FadeSelect = () => {
                     time: timestamp,
                 });
 
-                // Cria um caminho no Firestore isolado por usuário
-                const userMoodDataPath = doc(collection(db, `moodData/${userId}/moodData`));
+                // Usa a variável de ambiente para determinar a coleção
+                const collectionName = import.meta.env.VITE_FIREBASE_COLLECTION;
+                const userMoodDataPath = doc(collection(db, `${collectionName}/${userId}/moodData`));
 
                 await setDoc(userMoodDataPath, {
                     data: encryptedMoodData
@@ -79,7 +65,7 @@ const FadeSelect = () => {
             }
         } catch (error) {
             console.error('Error saving mood data: ', error);
-            setIsButtonDisabled(false); // Reabilita o botão em caso de erro
+            setIsButtonDisabled(false);
         }
     };
 
