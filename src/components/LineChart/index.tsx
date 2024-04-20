@@ -14,7 +14,7 @@ interface MoodChartProps {
 
 const MoodChart = ({ data }: MoodChartProps) => {
     const chartRef = useRef<HTMLDivElement>(null);
-    const [chartProps, setChartProps] = useState({ yAxisWidth: 120, xAxisHeight: 30 });
+    const [, setChartProps] = useState({ yAxisWidth: 120, xAxisHeight: 30 });
 
     const abbreviations = {
         "Euforia/Agitação/Aceleração/Agressividade": "EAAA",
