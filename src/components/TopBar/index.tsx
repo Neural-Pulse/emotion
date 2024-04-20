@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Button, IconButton, useBreakpointValue, useDisclosure } from '@chakra-ui/react';
+import { Flex, Button, IconButton, useBreakpointValue, } from '@chakra-ui/react';
 import { FaGithub } from 'react-icons/fa';
 
 interface TopBarProps {
