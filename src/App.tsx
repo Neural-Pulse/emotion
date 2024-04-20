@@ -7,9 +7,10 @@ import EmotionMether from './pages/EmotionMether';
 import Analytics from './pages/Analytics';
 import BottomMenu from './components/BottonMenu';
 import WelcomePage from './pages/Welcome';
+import TopBar from './components/TopBar'; // Importe o componente TopBar
 import { auth } from './utils/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { setupNotifications } from './utils/push-notifications/notificationSetup'; // Importe a função setupNotifications
+import { setupNotifications } from './utils/push-notifications/notificationSetup';
 
 const App = () => {
   const [user, loading] = useAuthState(auth);
@@ -24,8 +25,15 @@ const App = () => {
     return <div>Loading...</div>;
   }
 
+  const handleLogout = () => {
+    auth.signOut(); // Implementação do logout
+  };
+
+  const githubUrl = "https://github.com/Neural-Pulse/emotion"; // Substitua pela URL do seu repositório
+
   return (
     <Router>
+      <TopBar onLogout={handleLogout} githubUrl={githubUrl} />
       {user ? (
         <>
           <Box pb="60px">
