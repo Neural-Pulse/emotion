@@ -13,6 +13,12 @@ const customTheme = extendTheme({
             light: '#f0f0f0',
         },
     },
+    breakpoints: {
+        sm: '320px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px',
+    },
 });
 
 export default customTheme;
