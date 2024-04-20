@@ -26,9 +26,9 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerHeader>Navigation Menu</DrawerHeader>
+                    <DrawerHeader>Menu</DrawerHeader>
                     <DrawerBody>
-                        <Link to="/about" onClick={handleClose}>About</Link>
+                        <Link to="/about" onClick={handleClose}>Sobre</Link>
                         {/* Add more navigation links here, each wrapped with onClick={handleClose} */}
                     </DrawerBody>
                 </DrawerContent>

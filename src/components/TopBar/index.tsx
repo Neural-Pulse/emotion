@@ -27,7 +27,7 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, githubUrl, onOpen }) => {
                 onClick={onOpen} // Use the onOpen passed as a prop
                 mr={2}
             >
-                Open Menu
+                Menu
             </Button>
             <Flex flexGrow={1} justifyContent="flex-end">
                 <Button
