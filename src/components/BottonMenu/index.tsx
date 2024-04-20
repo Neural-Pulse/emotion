@@ -25,7 +25,7 @@ const BottomMenu = () => {
                 variant={isSelected('/') ? 'solid' : 'ghost'}
                 _hover={{ bg: 'blue.500', color: 'white' }}
             >
-                Home
+                Sentimentos
             </Button>
             <Button
                 onClick={() => history('/analytics')}
@@ -33,7 +33,7 @@ const BottomMenu = () => {
                 variant={isSelected('/analytics') ? 'solid' : 'ghost'}
                 _hover={{ bg: 'blue.500', color: 'white' }}
             >
-                Analytics
+                Afetivograma
             </Button>
         </Flex>
     );
