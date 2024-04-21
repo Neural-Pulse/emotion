@@ -1,4 +1,3 @@
-// SideBar/index.tsx
 import {
     Drawer,
     DrawerBody,
@@ -6,8 +5,15 @@ import {
     DrawerOverlay,
     DrawerContent,
     DrawerCloseButton,
+    Accordion,
+    AccordionItem,
+    AccordionButton,
+    AccordionPanel,
+    AccordionIcon,
+    Box,
+    Link
 } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
 interface SidebarProps {
     isOpen: boolean;
@@ -21,19 +27,36 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     };
 
     return (
-        <>
-            <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
-                <DrawerOverlay />
-                <DrawerContent>
-                    <DrawerCloseButton />
-                    <DrawerHeader>Menu</DrawerHeader>
-                    <DrawerBody>
-                        <Link to="/about" onClick={handleClose}>Sobre</Link>
-                        {/* Add more navigation links here, each wrapped with onClick={handleClose} */}
-                    </DrawerBody>
-                </DrawerContent>
-            </Drawer>
-        </>
+        <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
+            <DrawerOverlay />
+            <DrawerContent>
+                <DrawerCloseButton />
+                <DrawerHeader>Menu</DrawerHeader>
+                <DrawerBody>
+                    <Accordion allowToggle>
+                        <AccordionItem>
+                            <h2>
+                                <AccordionButton>
+                                    <Box flex="1" textAlign="left">
+                                        Afetivograma
+                                    </Box>
+                                    <AccordionIcon />
+                                </AccordionButton>
+                            </h2>
+                            <AccordionPanel pb={4}>
+                                <Link as={RouterLink} to="/afetivograma/emotionmether" onClick={handleClose}>Sentimento</Link>
+                                <br />
+                                <Link as={RouterLink} to="/afetivograma/analytics" onClick={handleClose}>Afetivograma</Link>
+                                <br />
+                                <Link as={RouterLink} to="/afetivograma/howto" onClick={handleClose}>Como Preencher</Link>
+                            </AccordionPanel>
+                        </AccordionItem>
+                    </Accordion>
+                    <Link as={RouterLink} to="/about" onClick={handleClose}>Sobre</Link>
+                    {/* Add more navigation links here, each wrapped with onClick={handleClose} */}
+                </DrawerBody>
+            </DrawerContent>
+        </Drawer>
     );
 };
 

@@ -17,20 +17,20 @@ const BottomMenu = () => {
             justifyContent="space-around"
             backgroundColor="#f8f9fa"
             padding="10px 0"
-            zIndex="docked" // Garante que o menu fique acima de outros conteúdos
+            zIndex="docked"
         >
             <Button
-                onClick={() => history('/')}
-                colorScheme={isSelected('/') ? 'blue' : 'gray'}
-                variant={isSelected('/') ? 'solid' : 'ghost'}
+                onClick={() => history('/afetivograma/emotionmether')}
+                colorScheme={isSelected('/afetivograma/emotionmether') ? 'blue' : 'gray'}
+                variant={isSelected('/afetivograma/emotionmether') ? 'solid' : 'ghost'}
                 _hover={{ bg: 'blue.500', color: 'white' }}
             >
                 Sentimentos
             </Button>
             <Button
-                onClick={() => history('/analytics')}
-                colorScheme={isSelected('/analytics') ? 'blue' : 'gray'}
-                variant={isSelected('/analytics') ? 'solid' : 'ghost'}
+                onClick={() => history('/afetivograma/analytics')}
+                colorScheme={isSelected('/afetivograma/analytics') ? 'blue' : 'gray'}
+                variant={isSelected('/afetivograma/analytics') ? 'solid' : 'ghost'}
                 _hover={{ bg: 'blue.500', color: 'white' }}
             >
                 Afetivograma
