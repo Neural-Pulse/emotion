@@ -20,11 +20,8 @@ const MemoryChat = () => {
     useEffect(() => {
         if (user) {
             const userMemoriesRef = collection(db, `memories/${user.uid}/userMemories`);
-            console.log("Chegou aqui");
             const q = query(userMemoriesRef, orderBy("timestamp", "desc"));
             const unsubscribe = onSnapshot(q, (querySnapshot) => {
-                console.log("onSnapshot chamado");
-                console.log("Número de documentos:", querySnapshot.size);
                 const loadedMessages = querySnapshot.docs.map(doc => ({
                     id: doc.id,
                     stage: doc.data().stage,
@@ -39,7 +36,6 @@ const MemoryChat = () => {
 
     const handleSendMessage = async () => {
         if (message && lifeStage && user) {
-            console.log("teste aqui");
             await addDoc(collection(db, `memories/${user.uid}/userMemories`), {
                 text: message,
                 stage: lifeStage,
@@ -47,7 +43,6 @@ const MemoryChat = () => {
             });
             setMessage('');
             setLifeStage('');
-            console.log(message, lifeStage, user);
         }
     };
 

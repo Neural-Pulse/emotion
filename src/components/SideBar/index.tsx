@@ -22,7 +22,6 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     const handleClose = () => {
-        console.log("Closing sidebar after navigation.");
         onClose();
     };
 

@@ -33,7 +33,6 @@ const App = () => {
   }
 
   const handleOpen = () => {
-    console.log("handleOpen called: Attempting to open the sidebar.");
     onOpen();
   };
 
