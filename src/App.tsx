@@ -5,14 +5,15 @@ import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
 import EmotionMether from './pages/EmotionMether';
 import Analytics from './pages/Analytics';
-import BottomMenu from './components/BottonMenu';
-import WelcomePage from './pages/Welcome';
+import HomePage from './pages/Home';  // Importe o novo componente HomePage
 import TopBar from './components/TopBar';
 import AboutPage from './pages/About';
+import HowtoFillLCMSP from './pages/HowtoFillLCMSP';
 import Sidebar from './components/SideBar';
 import { auth } from './utils/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { setupNotifications } from './utils/push-notifications/notificationSetup';
+import LcmspLayout from './components/lcmsp';
 
 const App = () => {
   const [user, loading] = useAuthState(auth);
@@ -20,9 +21,9 @@ const App = () => {
 
   useEffect(() => {
     if (!loading) {
-      setupNotifications(); // Call setupNotifications when loading finishes
+      setupNotifications();
     }
-  }, [loading]); // Dependency to re-run when the loading state changes
+  }, [loading]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -34,7 +35,7 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    auth.signOut(); // Logout implementation
+    auth.signOut();
   };
 
   const githubUrl = "https://github.com/Neural-Pulse/emotion";
@@ -45,23 +46,22 @@ const App = () => {
       <Sidebar isOpen={isOpen} onClose={onClose} />
       {user ? (
         <>
-          <Box pb="60px">
-            <Routes>
-              <Route path="/" element={<EmotionMether />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/about" element={<AboutPage />} />
-              {/* Additional authenticated routes can be added here */}
-            </Routes>
-          </Box>
-          <BottomMenu />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/afetivograma" element={<LcmspLayout />}>
+              <Route path="emotionmether" element={<EmotionMether />} />
+              <Route path="analytics" element={<Analytics />} />
+              <Route path="howto" element={<HowtoFillLCMSP />} />
+            </Route>
+            <Route path="/about" element={<AboutPage />} />
+          </Routes>
         </>
       ) : (
         <Routes>
-          <Route path="/" element={<WelcomePage />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          {/* Redirect all other paths to WelcomePage */}
-          <Route path="*" element={<WelcomePage />} />
+          <Route path="*" element={<HomePage />} />
         </Routes>
       )}
     </Router>
