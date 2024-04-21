@@ -51,6 +51,23 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                             </AccordionPanel>
                         </AccordionItem>
                     </Accordion>
+                    <Accordion allowToggle>
+                        <AccordionItem>
+                            <h2>
+                                <AccordionButton>
+                                    <Box flex="1" textAlign="left">
+                                        Memórias
+                                    </Box>
+                                    <AccordionIcon />
+                                </AccordionButton>
+                            </h2>
+                            <AccordionPanel pb={4}>
+                                <Link as={RouterLink} to="/memories/chat" onClick={handleClose}>Chat</Link>
+                                <br />
+                                <Link as={RouterLink} to="/memories/timeline" onClick={handleClose}>Linha do Tempo</Link>
+                            </AccordionPanel>
+                        </AccordionItem>
+                    </Accordion>
                     <Link as={RouterLink} to="/about" onClick={handleClose}>Sobre</Link>
                     {/* Add more navigation links here, each wrapped with onClick={handleClose} */}
                 </DrawerBody>
