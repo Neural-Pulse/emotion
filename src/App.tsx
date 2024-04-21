@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Box, useDisclosure } from '@chakra-ui/react';
+import { useDisclosure } from '@chakra-ui/react';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
 import EmotionMether from './pages/EmotionMether';
