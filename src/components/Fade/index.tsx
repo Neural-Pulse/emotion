@@ -57,11 +57,9 @@ const FadeSelect = () => {
                 await setDoc(userMoodDataPath, {
                     data: encryptedMoodData
                 });
-                console.log('Mood data saved with ID: ', userMoodDataPath.id);
                 setShowAlert(true);
                 setTimeout(() => setShowAlert(false), 3000);
             } else {
-                console.log('User not authenticated');
             }
         } catch (error) {
             console.error('Error saving mood data: ', error);

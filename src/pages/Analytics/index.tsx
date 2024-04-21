@@ -32,8 +32,6 @@ const Analytics = () => {
                     };
                 });
 
-                console.log('Mood data retrieved and decrypted: ', decryptedMoodData);
-
                 const sortedMoodData = decryptedMoodData.sort((a, b) => dayjs(a.time).valueOf() - dayjs(b.time).valueOf());
 
                 const formattedMoodData = sortedMoodData.map((data) => ({
@@ -47,7 +45,6 @@ const Analytics = () => {
             // Limpeza: desinscrever do snapshot ao desmontar o componente
             return () => unsubscribe();
         } else {
-            console.log('User not authenticated');
             setMoodData([]);
         }
     }, []);

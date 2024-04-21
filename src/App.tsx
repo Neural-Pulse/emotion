@@ -14,6 +14,9 @@ import { auth } from './utils/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { setupNotifications } from './utils/push-notifications/notificationSetup';
 import LcmspLayout from './components/lcmsp';
+import MemoryPage from './pages/MemoryPage';
+import MemoryChat from './components/MemoryChat';
+import TimeLinePage from './pages/MemoriesTimeLine';
 
 const App = () => {
   const [user, loading] = useAuthState(auth);
@@ -30,7 +33,6 @@ const App = () => {
   }
 
   const handleOpen = () => {
-    console.log("handleOpen called: Attempting to open the sidebar.");
     onOpen();
   };
 
@@ -53,6 +55,12 @@ const App = () => {
               <Route path="analytics" element={<Analytics />} />
               <Route path="howto" element={<HowtoFillLCMSP />} />
             </Route>
+            <Route path="/memories" element={<MemoryPage />}>
+              <Route index element={<MemoryChat />} />
+              <Route path="chat" element={<MemoryChat />} />
+              <Route path="timeline" element={<TimeLinePage />} />
+            </Route>
+            {/* Adicione outras rotas conforme necessário */}
             <Route path="/about" element={<AboutPage />} />
           </Routes>
         </>

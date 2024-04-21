@@ -10,6 +10,9 @@ const HomePage = () => {
                 <Button colorScheme="blue" onClick={() => navigate('/afetivograma/emotionmether')}>
                     Afetivograma
                 </Button>
+                <Button colorScheme="blue" onClick={() => navigate('/memories')}>
+                    Memórias
+                </Button>
                 {/* Adicione mais botões para outras metodologias aqui */}
             </VStack>
         </Center>
