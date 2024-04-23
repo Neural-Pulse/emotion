@@ -22,7 +22,6 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     const handleClose = () => {
-        console.log("Closing sidebar after navigation.");
         onClose();
     };
 
@@ -49,6 +48,23 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                                 <Link as={RouterLink} to="/afetivograma/analytics" onClick={handleClose}>Afetivograma</Link>
                                 <br />
                                 <Link as={RouterLink} to="/afetivograma/howto" onClick={handleClose}>Como Preencher</Link>
+                            </AccordionPanel>
+                        </AccordionItem>
+                    </Accordion>
+                    <Accordion allowToggle>
+                        <AccordionItem>
+                            <h2>
+                                <AccordionButton>
+                                    <Box flex="1" textAlign="left">
+                                        Memórias
+                                    </Box>
+                                    <AccordionIcon />
+                                </AccordionButton>
+                            </h2>
+                            <AccordionPanel pb={4}>
+                                <Link as={RouterLink} to="/memories/chat" onClick={handleClose}>Chat</Link>
+                                <br />
+                                <Link as={RouterLink} to="/memories/timeline" onClick={handleClose}>Linha do Tempo</Link>
                             </AccordionPanel>
                         </AccordionItem>
                     </Accordion>
