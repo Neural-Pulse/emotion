@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Box, Heading, Text, VStack, useTheme } from '@chakra-ui/react';
-import { db, auth } from '../../utils/firebase'; // Ajuste o caminho conforme necessário
+import { Box, Heading, Text, VStack, Button, useTheme } from '@chakra-ui/react';
+import { db, auth } from '../../utils/firebase';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 type StageColors = {
     infancia: string;
@@ -16,7 +18,6 @@ type Memory = {
     id: string;
     stage: string;
     text: string;
-    // Add other necessary properties that a Memory object should have
 };
 
 type GroupedMemories = {
@@ -47,22 +48,27 @@ const TimeLinePage = () => {
     }, [user]);
 
     const groupMemoriesByStage = (memories: Memory[]): GroupedMemories => {
-        const grouped: GroupedMemories = memories.reduce((acc, memory) => {
-            if (!acc[memory.stage]) {
-                acc[memory.stage] = [];
-            }
-            acc[memory.stage].push(memory);
+        return memories.reduce<GroupedMemories>((acc, memory) => {
+            (acc[memory.stage] = acc[memory.stage] || []).push(memory);
             return acc;
-        }, {} as GroupedMemories);
+        }, {});
+    };
 
-        const ordered: GroupedMemories = {};
-        const lifeStagesOrder = ["infancia", "adolescencia", "adulto", "idoso"];
-        lifeStagesOrder.forEach(stage => {
-            if (grouped[stage]) {
-                ordered[stage] = grouped[stage];
-            }
-        });
-        return ordered;
+    const exportPDF = async () => {
+        const input = document.getElementById('pdf-content');
+        if (input) {
+            const canvas = await html2canvas(input);
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [canvas.width, canvas.height]
+            });
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save("download.pdf");
+        } else {
+            console.error('Element with ID pdf-content not found');
+        }
     };
 
     const stageColors: StageColors = {
@@ -75,18 +81,21 @@ const TimeLinePage = () => {
     return (
         <Box p={5}>
             <Heading as="h1" size="xl" mb={4}>Linha do Tempo das Memórias</Heading>
-            <VStack spacing={4}>
-                {Object.keys(memories).map(stage => (
-                    <Box key={stage} bg={stageColors[stage]} p={4} borderRadius="md">
-                        <Heading size="md">{stage}</Heading>
-                        {memories[stage].map(memory => (
-                            <Box key={memory.id} p={3} shadow="md" borderWidth="1px" borderRadius="md">
-                                <Text>{memory.text}</Text>
-                            </Box>
-                        ))}
-                    </Box>
-                ))}
-            </VStack>
+            <Box id="pdf-content" p={5} bg="white">
+                <VStack spacing={4}>
+                    {Object.keys(memories).map(stage => (
+                        <Box key={stage} bg={stageColors[stage]} p={4} borderRadius="md">
+                            <Heading size="md">{stage}</Heading>
+                            {memories[stage].map(memory => (
+                                <Box key={memory.id} p={3} shadow="md" borderWidth="1px" borderRadius="md">
+                                    <Text>{memory.text}</Text>
+                                </Box>
+                            ))}
+                        </Box>
+                    ))}
+                </VStack>
+            </Box>
+            <Button onClick={exportPDF} mt={4}>Export to PDF</Button>
         </Box>
     );
 };
