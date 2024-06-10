@@ -22,7 +22,7 @@ const MoodChart = ({ data }: MoodChartProps) => {
     const [chartProps, setChartProps] = useState({ yAxisWidth: 120, xAxisHeight: 30 });
     const [filteredData, setFilteredData] = useState(data);
     const [groupByDay, setGroupByDay] = useState(false);
-    const [selectedMonth, setSelectedMonth] = useState(dayjs().format('YYYY-MM'));
+    const [selectedMonth, setSelectedMonth] = useState('Tudo');
 
     const abbreviations = {
         "Euforia/Agitação/Aceleração/Agressividade": "EAAA",
@@ -56,7 +56,9 @@ const MoodChart = ({ data }: MoodChartProps) => {
     }, []);
 
     useEffect(() => {
-        const filteredByMonth = data.filter(d => dayjs(d.time, 'DD/MM HH:mm').format('YYYY-MM') === selectedMonth);
+        const filteredByMonth = selectedMonth === 'Tudo'
+            ? data
+            : data.filter(d => dayjs(d.time, 'DD/MM HH:mm').format('YYYY-MM') === selectedMonth);
         if (groupByDay) {
             const groupedData = filteredByMonth.reduce((acc, curr) => {
                 const date = dayjs(curr.time, 'DD/MM HH:mm');
@@ -147,6 +149,7 @@ const MoodChart = ({ data }: MoodChartProps) => {
                     width="200px"
                     ml={2}
                 >
+                    <option value="Tudo">Tudo</option>
                     {Array.from(new Set(data.map(d => dayjs(d.time, 'DD/MM HH:mm').format('YYYY-MM')))).map(month => (
                         <option key={month} value={month}>{dayjs(month, 'YYYY-MM').format('MMMM YYYY')}</option>
                     ))}
