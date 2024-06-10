@@ -1,9 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { Button, Box, useBreakpointValue } from '@chakra-ui/react';
+import { Button, Box, Select, useBreakpointValue, Flex } from '@chakra-ui/react';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import 'dayjs/locale/pt-br';
+
+dayjs.extend(customParseFormat);
+dayjs.locale('pt-br');
 
 interface MoodChartProps {
     data: {
@@ -14,7 +19,10 @@ interface MoodChartProps {
 
 const MoodChart = ({ data }: MoodChartProps) => {
     const chartRef = useRef<HTMLDivElement>(null);
-    const [, setChartProps] = useState({ yAxisWidth: 120, xAxisHeight: 30 });
+    const [chartProps, setChartProps] = useState({ yAxisWidth: 120, xAxisHeight: 30 });
+    const [filteredData, setFilteredData] = useState(data);
+    const [groupByDay, setGroupByDay] = useState(false);
+    const [selectedMonth, setSelectedMonth] = useState(dayjs().format('YYYY-MM'));
 
     const abbreviations = {
         "Euforia/Agitação/Aceleração/Agressividade": "EAAA",
@@ -22,8 +30,8 @@ const MoodChart = ({ data }: MoodChartProps) => {
         "Bom humor/Estabilidade": "BhEs",
         "Tristeza/Fadiga/Cansaço/Desânimo": "TFCD",
         "Tristeza profunda/Lentidão/Apatia": "TPLA",
-
     };
+
     const chartDimensions = useBreakpointValue({
         base: { height: 300, yAxisWidth: 80, xAxisHeight: 20 },
         sm: { height: 300, yAxisWidth: 100, xAxisHeight: 30 },
@@ -34,10 +42,10 @@ const MoodChart = ({ data }: MoodChartProps) => {
 
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 768) { // Considera tela menor que 768px como móvel
-                setChartProps({ yAxisWidth: 100, xAxisHeight: 100 }); // Ajustes para mobile
+            if (window.innerWidth < 768) {
+                setChartProps({ yAxisWidth: 100, xAxisHeight: 100 });
             } else {
-                setChartProps({ yAxisWidth: 400, xAxisHeight: 100 }); // Ajustes para desktop
+                setChartProps({ yAxisWidth: 400, xAxisHeight: 100 });
             }
         };
 
@@ -46,6 +54,39 @@ const MoodChart = ({ data }: MoodChartProps) => {
 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    useEffect(() => {
+        const filteredByMonth = data.filter(d => dayjs(d.time, 'DD/MM HH:mm').format('YYYY-MM') === selectedMonth);
+        if (groupByDay) {
+            const groupedData = filteredByMonth.reduce((acc, curr) => {
+                const date = dayjs(curr.time, 'DD/MM HH:mm');
+                if (!date.isValid()) {
+                    console.error(`Invalid date format: ${curr.time}`);
+                    return acc;
+                }
+                const day = date.format('DD/MM/YYYY');
+                if (!acc[day]) {
+                    acc[day] = [];
+                }
+                acc[day].push(curr.moodState);
+                return acc;
+            }, {} as Record<string, string[]>);
+
+            const aggregatedData = Object.keys(groupedData).map(day => {
+                const moodCounts = groupedData[day].reduce((acc, mood) => {
+                    acc[mood] = (acc[mood] || 0) + 1;
+                    return acc;
+                }, {} as Record<string, number>);
+
+                const mostFrequentMood = Object.keys(moodCounts).reduce((a, b) => moodCounts[a] > moodCounts[b] ? a : b);
+                return { time: day, moodState: mostFrequentMood };
+            });
+
+            setFilteredData(aggregatedData);
+        } else {
+            setFilteredData(filteredByMonth);
+        }
+    }, [groupByDay, selectedMonth, data]);
 
     const handleExportPDF = async () => {
         const exportContainer = document.createElement('div');
@@ -90,15 +131,33 @@ const MoodChart = ({ data }: MoodChartProps) => {
         }, 500);
     };
 
+    const toggleGroupByDay = () => {
+        setGroupByDay(prev => !prev);
+    };
 
     return (
         <Box m={10} ml={2}>
-            <Button onClick={handleExportPDF} mb={4} ml={0}>
-                Exportar PDF
-            </Button>
+            <Flex mb={4} alignItems="center">
+                <Button onClick={toggleGroupByDay} ml={2}>
+                    {groupByDay ? 'Mostrar por Hora' : 'Agrupar por Dia'}
+                </Button>
+                <Select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    width="200px"
+                    ml={2}
+                >
+                    {Array.from(new Set(data.map(d => dayjs(d.time, 'DD/MM HH:mm').format('YYYY-MM')))).map(month => (
+                        <option key={month} value={month}>{dayjs(month, 'YYYY-MM').format('MMMM YYYY')}</option>
+                    ))}
+                </Select>
+                <Button onClick={handleExportPDF} ml={2}>
+                    Exportar PDF
+                </Button>
+            </Flex>
             <div ref={chartRef}>
                 <ResponsiveContainer width="100%" height={chartDimensions?.height}>
-                    <LineChart data={data}
+                    <LineChart data={filteredData}
                         margin={{ top: 5, right: 30, bottom: 100, left: 0 }}>
                         <XAxis dataKey="time" angle={-90} textAnchor="end" height={chartDimensions?.xAxisHeight} />
                         <YAxis
