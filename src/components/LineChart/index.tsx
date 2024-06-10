@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -19,7 +19,7 @@ interface MoodChartProps {
 
 const MoodChart = ({ data }: MoodChartProps) => {
     const chartRef = useRef<HTMLDivElement>(null);
-    const [chartProps, setChartProps] = useState({ yAxisWidth: 120, xAxisHeight: 30 });
+    const [, setChartProps] = useState({ yAxisWidth: 120, xAxisHeight: 30 });
     const [filteredData, setFilteredData] = useState(data);
     const [groupByDay, setGroupByDay] = useState(false);
     const [selectedMonth, setSelectedMonth] = useState('Tudo');
