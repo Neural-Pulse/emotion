@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { Button, Box, Select, useBreakpointValue, Flex } from '@chakra-ui/react';
+import { Button, Box, Select, useBreakpointValue, Flex, Text } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import 'dayjs/locale/pt-br';
@@ -30,6 +30,14 @@ const MoodChart = ({ data }: MoodChartProps) => {
         "Bom humor/Estabilidade": "BhEs",
         "Tristeza/Fadiga/Cansaço/Desânimo": "TFCD",
         "Tristeza profunda/Lentidão/Apatia": "TPLA",
+    };
+
+    const abbreviationsLegend = {
+        "EAAA": "Euforia/Agitação/Aceleração/Agressividade",
+        "III": "Irritabilidade/Inquietação/Impaciência",
+        "BhEs": "Bom humor/Estabilidade",
+        "TFCD": "Tristeza/Fadiga/Cansaço/Desânimo",
+        "TPLA": "Tristeza profunda/Lentidão/Apatia",
     };
 
     const chartDimensions = useBreakpointValue({
@@ -91,46 +99,55 @@ const MoodChart = ({ data }: MoodChartProps) => {
     }, [groupByDay, selectedMonth, data]);
 
     const handleExportPDF = async () => {
-        const exportContainer = document.createElement('div');
-        exportContainer.style.width = '800px';
-        exportContainer.style.height = '400px';
-        exportContainer.style.position = 'absolute';
-        exportContainer.style.left = '-10000px';
-        document.body.appendChild(exportContainer);
-
-        const titleElement = document.createElement('h2');
-        titleElement.textContent = 'Gráfico de Humor';
-        titleElement.style.textAlign = 'center';
-        titleElement.style.marginTop = '20px';
-        exportContainer.appendChild(titleElement);
-
         if (chartRef.current) {
-            const chartClone = chartRef.current.cloneNode(true);
-            exportContainer.appendChild(chartClone);
-        }
-
-        setTimeout(async () => {
-            const canvas = await html2canvas(exportContainer, {
+            const chartCanvas = await html2canvas(chartRef.current, {
                 useCORS: true,
                 scale: 2,
             });
 
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF({
-                orientation: 'landscape',
-                unit: 'mm',
-                format: 'a4'
-            });
+            const combinedCanvas = document.createElement('canvas');
+            combinedCanvas.width = chartCanvas.width;
+            combinedCanvas.height = chartCanvas.height + 180; // Espaço para o título e a legenda
+            const combinedCtx = combinedCanvas.getContext('2d');
 
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const imgScaledWidth = pageWidth - 20;
-            const imgScaledHeight = (canvas.height / canvas.width) * imgScaledWidth;
+            if (combinedCtx) {
+                combinedCtx.fillStyle = '#fff';
+                combinedCtx.fillRect(0, 0, combinedCanvas.width, combinedCanvas.height);
 
-            pdf.addImage(imgData, 'PNG', 10, 10, imgScaledWidth, imgScaledHeight);
-            pdf.save(`mood_chart_${dayjs().format('YYYYMMDD_HHmmss')}.pdf`);
+                // Adicionar título
+                combinedCtx.fillStyle = '#000';
+                combinedCtx.font = '50px Arial';
+                combinedCtx.textAlign = 'center';
+                combinedCtx.fillText('Gráfico de Humor', combinedCanvas.width / 2, 50);
 
-            document.body.removeChild(exportContainer);
-        }, 500);
+                // Adicionar gráfico
+                combinedCtx.drawImage(chartCanvas, 0, 100);
+
+                // Adicionar legenda de forma horizontal
+                combinedCtx.font = '30px Arial';
+                combinedCtx.textAlign = 'left';
+                const yPosition = chartCanvas.height + 130;
+                const legendEntries = Object.entries(abbreviationsLegend);
+                const spacing = combinedCanvas.width / legendEntries.length;
+                legendEntries.forEach(([abbr, meaning], index) => {
+                    combinedCtx.fillText(`${abbr}: ${meaning}`, spacing * index + 10, yPosition);
+                });
+
+                const imgData = combinedCanvas.toDataURL('image/png');
+                const pdf = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const imgScaledWidth = pageWidth - 20;
+                const imgScaledHeight = (combinedCanvas.height / combinedCanvas.width) * imgScaledWidth;
+
+                pdf.addImage(imgData, 'PNG', 10, 10, imgScaledWidth, imgScaledHeight);
+                pdf.save(`mood_chart_${dayjs().format('YYYYMMDD_HHmmss')}.pdf`);
+            }
+        }
     };
 
     const toggleGroupByDay = () => {
@@ -184,6 +201,16 @@ const MoodChart = ({ data }: MoodChartProps) => {
                     </LineChart>
                 </ResponsiveContainer>
             </div>
+            <Box mt={4}>
+                <Text fontSize="sm" fontWeight="bold">Legenda:</Text>
+                <Flex wrap="wrap" mt={2}>
+                    {Object.entries(abbreviationsLegend).map(([abbr, meaning]) => (
+                        <Box key={abbr} mr={4} mb={2}>
+                            <Text fontSize="sm"><strong>{abbr}:</strong> {meaning}</Text>
+                        </Box>
+                    ))}
+                </Flex>
+            </Box>
         </Box>
     );
 };

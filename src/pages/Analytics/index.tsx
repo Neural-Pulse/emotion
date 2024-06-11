@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import MoodChart from '../../components/LineChart';
+import MoodChart from '../../components/MoodChart';
 import { Box, Center, Text } from '@chakra-ui/react';
 import { auth, db } from '../../utils/firebase';
 import { collection, query, onSnapshot } from 'firebase/firestore';
