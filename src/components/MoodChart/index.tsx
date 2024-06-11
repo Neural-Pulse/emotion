@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { Button, Box, Select, useBreakpointValue, Flex, Text } from '@chakra-ui/react';
+import { Button, Box, useBreakpointValue, Flex, Text, Input } from '@chakra-ui/react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import 'dayjs/locale/pt-br';
@@ -22,7 +24,8 @@ const MoodChart = ({ data }: MoodChartProps) => {
     const [, setChartProps] = useState({ yAxisWidth: 120, xAxisHeight: 30 });
     const [filteredData, setFilteredData] = useState(data);
     const [groupByDay, setGroupByDay] = useState(false);
-    const [selectedMonth, setSelectedMonth] = useState('Tudo');
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
 
     const abbreviations = {
         "Euforia/Agitação/Aceleração/Agressividade": "EAAA",
@@ -64,14 +67,25 @@ const MoodChart = ({ data }: MoodChartProps) => {
     }, []);
 
     useEffect(() => {
-        const filteredByMonth = selectedMonth === 'Tudo'
-            ? data
-            : data.filter(d => dayjs(d.time, 'DD/MM HH:mm').format('YYYY-MM') === selectedMonth);
+        const filteredByDateRange = data.filter(d => {
+            const date = dayjs(d.time, 'DD/MM HH:mm');
+            if (!date.isValid()) {
+                console.error(`Invalid date format: ${d.time}`);
+                return false;
+            }
+            if (startDate && date.isBefore(startDate, 'day')) {
+                return false;
+            }
+            if (endDate && date.isAfter(endDate, 'day')) {
+                return false;
+            }
+            return true;
+        });
+
         if (groupByDay) {
-            const groupedData = filteredByMonth.reduce((acc, curr) => {
+            const groupedData = filteredByDateRange.reduce((acc, curr) => {
                 const date = dayjs(curr.time, 'DD/MM HH:mm');
                 if (!date.isValid()) {
-                    console.error(`Invalid date format: ${curr.time}`);
                     return acc;
                 }
                 const day = date.format('DD/MM/YYYY');
@@ -94,9 +108,9 @@ const MoodChart = ({ data }: MoodChartProps) => {
 
             setFilteredData(aggregatedData);
         } else {
-            setFilteredData(filteredByMonth);
+            setFilteredData(filteredByDateRange);
         }
-    }, [groupByDay, selectedMonth, data]);
+    }, [groupByDay, startDate, endDate, data]);
 
     const handleExportPDF = async () => {
         if (chartRef.current) {
@@ -118,7 +132,7 @@ const MoodChart = ({ data }: MoodChartProps) => {
                 combinedCtx.fillStyle = '#000';
                 combinedCtx.font = '50px Arial';
                 combinedCtx.textAlign = 'center';
-                combinedCtx.fillText('Gráfico de Humor', combinedCanvas.width / 2, 50);
+                combinedCtx.fillText('Mood Chart', combinedCanvas.width / 2, 50);
 
                 // Adicionar gráfico
                 combinedCtx.drawImage(chartCanvas, 0, 100);
@@ -160,17 +174,30 @@ const MoodChart = ({ data }: MoodChartProps) => {
                 <Button onClick={toggleGroupByDay} ml={2}>
                     {groupByDay ? 'Mostrar por Hora' : 'Agrupar por Dia'}
                 </Button>
-                <Select
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                    width="200px"
-                    ml={2}
-                >
-                    <option value="Tudo">Tudo</option>
-                    {Array.from(new Set(data.map(d => dayjs(d.time, 'DD/MM HH:mm').format('YYYY-MM')))).map(month => (
-                        <option key={month} value={month}>{dayjs(month, 'YYYY-MM').format('MMMM YYYY')}</option>
-                    ))}
-                </Select>
+                <Box ml={2}>
+                    <DatePicker
+                        selected={startDate}
+                        onChange={(date: Date) => setStartDate(date)}
+                        selectsStart
+                        startDate={startDate}
+                        endDate={endDate}
+                        dateFormat="dd/MM/yyyy"
+                        customInput={<Input />}
+                        placeholderText="Data Inicial"
+                    />
+                </Box>
+                <Box ml={2}>
+                    <DatePicker
+                        selected={endDate}
+                        onChange={(date: Date) => setEndDate(date)}
+                        selectsEnd
+                        startDate={startDate}
+                        endDate={endDate}
+                        dateFormat="dd/MM/yyyy"
+                        customInput={<Input />}
+                        placeholderText="Data Final"
+                    />
+                </Box>
                 <Button onClick={handleExportPDF} ml={2}>
                     Exportar PDF
                 </Button>
@@ -202,7 +229,7 @@ const MoodChart = ({ data }: MoodChartProps) => {
                 </ResponsiveContainer>
             </div>
             <Box mt={4}>
-                <Text fontSize="sm" fontWeight="bold">Legenda:</Text>
+                <Text fontSize="sm" fontWeight="bold">Legend:</Text>
                 <Flex wrap="wrap" mt={2}>
                     {Object.entries(abbreviationsLegend).map(([abbr, meaning]) => (
                         <Box key={abbr} mr={4} mb={2}>
